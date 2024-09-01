@@ -24,57 +24,21 @@ void MainWindow::Quit () {
 
 void MainWindow::FullScreen () {
     ui->rawText->append("Full Screen");
-    QDialog *fullScreenDialog = nullptr;
 
-    // Check if the fullscreen dialog already exists
-    if (!fullScreenDialog)
+    if (videoWidget->isFullScreen())
     {
-        fullScreenDialog = new QDialog(this);
-        fullScreenDialog->setWindowFlag(Qt::FramelessWindowHint); // Remove window borders
-        fullScreenDialog->setWindowFlag(Qt::Window); // Set as a top-level window
-        fullScreenDialog->setModal(true); // Modal dialog
-        fullScreenDialog->setWindowTitle("Fullscreen Video");
-
-        QVBoxLayout *dialogLayout = new QVBoxLayout(fullScreenDialog);
-        fullScreenDialog->setLayout(dialogLayout);
-
-        // Remove the videoWidget from its current layout
+        // If the videoWidget is already in fullscreen, restore it to normal size
+        videoWidget->showNormal();
+        ui->verticalLayout->addWidget(videoWidget); // Re-add to the layout if necessary
+    }
+    else
+    {
+        // Remove videoWidget from its current layout (if necessary)
         ui->verticalLayout->removeWidget(videoWidget);
 
-        // Add the videoWidget to the dialog layout
-        dialogLayout->addWidget(videoWidget);
-        // Connect the QDialog rejected signal to restore the videoWidget to MainWindow
-        connect(fullScreenDialog, &QDialog::rejected, this, &MainWindow::restoreVideoWidget);
-
-        // Resize and show the dialog in fullscreen
-        fullScreenDialog->showFullScreen();
-    } else {
-        // If already fullscreen, restore to original layout
-        ui->verticalLayout->addWidget(videoWidget);
-        fullScreenDialog->hide();
-        delete fullScreenDialog;
-        fullScreenDialog = nullptr;
+        // Set the videoWidget to fullscreen mode
+        videoWidget->setWindowFlag(Qt::Window); // Make it a top-level window
+        videoWidget->showFullScreen();
     }
 }
-void MainWindow::restoreVideoWidget()
-{
-    // Restore the videoWidget to the MainWindow layout
-    ui->verticalLayout->addWidget(videoWidget);
 
-    // Hide and delete the fullscreen dialog
-    fullScreenDialog->hide();
-    delete fullScreenDialog;
-    fullScreenDialog = nullptr;
-}
-
-void MainWindow::closeEvent(QCloseEvent *event) {
-    // Ensure that videoWidget is returned to the MainWindow before closing
-    if (fullScreenDialog)
-    {
-        ui->verticalLayout->addWidget(videoWidget);
-        fullScreenDialog->hide();
-        delete fullScreenDialog;
-        fullScreenDialog = nullptr;
-    }
-    QMainWindow::closeEvent(event);
-}

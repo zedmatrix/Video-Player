@@ -52,7 +52,6 @@ public:
     void GetMetadata(const char* mediaFile);
 
 private slots:
-    void closeEvent(QCloseEvent *event);
     void MediaStatus(QMediaPlayer::MediaStatus status); // Get Media Status
     void StateChanged(QMediaPlayer::PlaybackState state);
     void Selected(QListWidgetItem *item); // Slot to handle item click
@@ -63,8 +62,6 @@ private:
     QMediaPlayer *player;
     QAudioOutput *audioOutput;
     QVideoWidget *videoWidget;
-    QDialog *fullScreenDialog;
-    void restoreVideoWidget();
     void updateStatusBar();
     void Play();
     void Stop();
